@@ -1,0 +1,109 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; 
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #1a0508, #290a0f, #0f0304);
+  color: white;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 40px;
+  gap: 60px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.text-section {
+  flex: 0 0 45%;
+  max-width: 700px;
+  z-index: 2;
+}
+
+.welcome {
+  color: #ff6b6b;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-family: "Montserrat", sans-serif;
+  font-size: 64px;
+  font-weight: 900;
+  margin-bottom: 20px;
+  line-height: 1.05;
+  background: linear-gradient(90deg, #ff4d6d, #ff944d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.description {
+  font-size: 18px;
+  line-height: 1.7;
+  color: #e0e0e0;
+}
+
+.cta-btn {
+  margin-top: 25px;
+  background: #ff4d6d;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  color: white;
+  transition: 0.3s;
+}
+.cta-btn:hover {
+  background: #ff2e55;
+  box-shadow: 0 0 20px #ff4d6d;
+}
+
+.logo-section {
+  flex: 0 0 45%;
+  max-width: 1100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+}
+.logo-section img {
+  display: block;
+  width: clamp(140px, 35vw, 420px);
+  height: auto;
+  max-width: 100%;
+}
+
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  z-index: 1;
+  pointer-events: none;
+  animation: float 8s ease-in-out infinite;
+}
+.circle.small { width: 200px; height: 200px; top: 40px; left: 40px; animation-duration: 6s; }
+.circle.medium { width: 350px; height: 350px; bottom: 80px; right: 200px; animation-duration: 9s; }
+.circle.large { width: 600px; height: 600px; bottom: -150px; right: -150px; animation-duration: 12s; }
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-25px); }
+  100% { transform: translateY(0px); }
+}
+
+@media (max-width: 900px) {
+  .container { flex-direction: column; gap: 30px; padding: 20px; }
+  .text-section { flex: 0 0 100%; max-width: 100%; }
+  .title { font-size: 44px; }
+  .logo-section { flex: 0 0 100%; max-width: 100%; }
+  .logo-section img { width: clamp(120px, 70vw, 320px); }
+}

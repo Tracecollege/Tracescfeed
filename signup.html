@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="signup.css">
+</head>
+<body>
+  <div class="signup-container">
+    <h1><i class="fa-solid fa-user-plus"></i> Sign Up</h1>
+    <form id="signupForm">
+      <div class="input-group">
+        <i class="fa-solid fa-id-card"></i>
+        <input type="text" id="studentNumber" placeholder="Student Number (Format: XX - XX - XXX)" pattern="\d{2}\s-\s\d{2}\s-\s\d{3}" required />
+      </div>
+      <div id="student-number-error" style="color: #ff4c4c; font-size: 0.85rem; margin: 10px 0; display: none;">
+        Student number must be in format: XX - XX - XXX (e.g., 20 - 21 - 000)
+      </div>
+      <div id="student-exists-error" style="color: #ff4c4c; font-size: 0.85rem; margin: 10px 0; display: none;">
+        This student number already exists. Please log in instead.
+      </div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-lock"></i>
+        <input type="password" id="password" placeholder="Password" required />
+      </div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-lock"></i>
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
+      </div>
+
+      <div id="password-error" style="color: #ff4c4c; font-size: 0.85rem; margin: 10px 0; display: none;">
+        Passwords do not match! Please try again.
+      </div>
+
+      <button type="submit" class="signup-btn">Sign Up</button>
+
+      <p class="note">
+        Once you sign up, your name will automatically be set as <strong>"Anonymous"</strong>.  
+        You cannot be identified by anyone — your identity remains private.
+      </p>
+
+      <div class="alt-option">
+        Already have an account? <a href="login.html">Log in</a>
+      </div>
+    </form>
+  </div>
+
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { 
+      getFirestore, collection, addDoc, query, where, getDocs 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC7oFziUJI6MVGh6CJ7ATfd8dw8BhRPfeA",
+  authDomain: "tracescfeed.firebaseapp.com",
+  projectId: "tracescfeed",
+  storageBucket: "tracescfeed.firebasestorage.app",
+  messagingSenderId: "700797865835",
+  appId: "1:700797865835:web:65ac0701c50c13edb6062e"
+};
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // ---- Form Logic ----
+    const form = document.getElementById('signupForm');
+    const studentNumberInput = document.getElementById('studentNumber');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const passwordError = document.getElementById('password-error');
+    const studentNumberError = document.getElementById('student-number-error');
+    const studentExistsError = document.getElementById('student-exists-error');
+
+
+    studentNumberInput.addEventListener('input', function(e) {
+      let value = e.target.value.replace(/[^\d]/g, '');
+      if (value.length > 7) value = value.slice(0, 7);
+      if (value.length > 0) {
+        let formatted = value.match(/(\d{0,2})(\d{0,2})(\d{0,3})/);
+        value = formatted[1];
+        if (formatted[2]) value += ' - ' + formatted[2];
+        if (formatted[3]) value += ' - ' + formatted[3];
+      }
+      e.target.value = value;
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const studentNumber = studentNumberInput.value.trim();
+      const password = passwordInput.value.trim();
+      const confirmPassword = confirmPasswordInput.value.trim();
+      const pattern = /^\d{2}\s-\s\d{2}\s-\s\d{3}$/;
+
+      // Validation
+      if (!pattern.test(studentNumber)) {
+        studentNumberError.style.display = 'block';
+        return;
+      } else {
+        studentNumberError.style.display = 'none';
+      }
+
+      if (password !== confirmPassword) {
+        passwordError.style.display = 'block';
+        return;
+      } else {
+        passwordError.style.display = 'none';
+      }
+
+      const q = query(collection(db, "Userprofile"), where("studentnumber", "==", studentNumber));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        // Student number already exists
+        studentExistsError.style.display = 'block';
+        return;
+      } else {
+        studentExistsError.style.display = 'none';
+      }
+
+      try {
+  
+        await addDoc(collection(db, "Userprofile"), {
+          studentnumber: studentNumber,
+          password: password,
+          studentcouncil: false
+        });
+
+        alert("Sign up successful! Please log in with your credentials.");
+        window.location.href = "login.html";
+      } catch (error) {
+        console.error("Error saving user:", error);
+        alert("Error creating account. Please try again.");
+      }
+    });
+  </script>
+</body>
+</html>

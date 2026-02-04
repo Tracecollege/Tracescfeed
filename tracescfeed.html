@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login - TRACESFEED</title>
+    <link rel="stylesheet" href="login.css" />
+
+    <!-- Firebase -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        query,
+        where,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyC7oFziUJI6MVGh6CJ7ATfd8dw8BhRPfeA",
+        authDomain: "tracescfeed.firebaseapp.com",
+        projectId: "tracescfeed",
+        storageBucket: "tracescfeed.firebasestorage.app",
+        messagingSenderId: "700797865835",
+        appId: "1:700797865835:web:65ac0701c50c13edb6062e",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      // Expose Firestore for use outside the module
+      window.db = db;
+      window.firestoreFns = { collection, query, where, getDocs };
+    </script>
+  </head>
+
+  <body>
+    <div class="login-container">
+      <h1>TRACESFEED</h1>
+      <p>Welcome to our school feedback system</p>
+
+      <form onsubmit="return checkLogin(event)">
+        <input
+          type="text"
+          id="username"
+          placeholder="Student Number (XX - XX - XXXX)"
+          pattern="\d{2}\s-\s\d{2}\s-\s\d{4}"
+          required
+        />
+
+        <div
+          id="student-number-error"
+          style="color:#ff4c4c;font-size:13px;margin:5px 0;display:none"
+        >
+          Invalid format. Use: XX - XX - XXXX (e.g., 11 - 11 - 1111)
+        </div>
+
+        <input type="password" id="password" placeholder="Password" required />
+        <button type="submit" id="loginBtn">Login</button>
+      </form>
+
+      <div class="signup-prompt">
+        Doesn't have an account yet?
+        <a href="signup.html"> Sign up.</a>
+      </div>
+    </div>
+
+    <script>
+      // 🔹 Automatically format the student number input (XX - XX - XXXX)
+      document.getElementById("username").addEventListener("input", function (e) {
+        let value = e.target.value.replace(/[^\d]/g, "");
+
+        // allow only 8 digits total
+        if (value.length > 8) value = value.slice(0, 8);
+
+        if (value.length > 0) {
+          let formattedValue = value.match(/(\d{0,2})(\d{0,2})(\d{0,4})/);
+          value = formattedValue[1];
+          if (formattedValue[2]) value += " - " + formattedValue[2];
+          if (formattedValue[3]) value += " - " + formattedValue[3];
+        }
+
+        e.target.value = value;
+      });
+
+      // 🔹 Login
+      async function checkLogin(event) {
+        event.preventDefault();
+
+        // Disable form while processing
+        document.getElementById("username").disabled = true;
+        document.getElementById("password").disabled = true;
+        document.getElementById("loginBtn").disabled = true;
+
+        const user = document.getElementById("username").value;
+        const pass = document.getElementById("password").value;
+        const errorDiv = document.getElementById("student-number-error");
+
+        // ✅ Validate: XX - XX - XXXX
+        const studentNumberPattern = /^\d{2}\s-\s\d{2}\s-\s\d{4}$/;
+
+        if (!studentNumberPattern.test(user)) {
+          errorDiv.style.display = "block";
+          reactivateForm();
+          return false;
+        }
+        errorDiv.style.display = "none";
+
+        if (pass.trim() === "") {
+          alert("Please enter your password!");
+          reactivateForm();
+          return false;
+        }
+
+        try {
+          const { collection, query, where, getDocs } = window.firestoreFns;
+
+          const q = query(
+            collection(window.db, "Userprofile"),
+            where("studentnumber", "==", user),
+            where("password", "==", pass)
+          );
+
+          const querySnapshot = await getDocs(q);
+
+          if (!querySnapshot.empty) {
+            const doc = querySnapshot.docs[0];
+            const userData = doc.data();
+
+            // 🔹 Get student council value
+            const studentCouncilValue = userData.studentcouncil || "none";
+
+            // 🔹 Store in localStorage
+            localStorage.setItem("studentCouncil", studentCouncilValue);
+
+            console.log("Student Council value:", studentCouncilValue);
+
+            // 🔹 Continue login flow
+            sessionStorage.setItem("studentNumber", user);
+            localStorage.setItem("loggedIn", "1");
+
+            // 🔹 Redirect
+            window.location.href = "index.html";
+          } else {
+            alert("Invalid credentials. Please check your student number or password.");
+            reactivateForm();
+          }
+        } catch (error) {
+          console.error("Login error:", error);
+          alert("Error connecting to the database. Please try again later.");
+          reactivateForm();
+        }
+      }
+
+      // 🔹 Re-enable form inputs
+      function reactivateForm() {
+        document.getElementById("username").disabled = false;
+        document.getElementById("password").disabled = false;
+        document.getElementById("loginBtn").disabled = false;
+      }
+    </script>
+  </body> 
+</html>

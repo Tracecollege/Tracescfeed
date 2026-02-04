@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>TRACESCFEED</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <script src="redirect.js"></script>
+
+    <aside class="sidebar">
+      <div>
+        <div class="brand">
+          <div class="iconBox"><i class="fa-solid fa-school"></i></div>
+          <div class="title">TRACESCFEED</div>
+        </div>
+
+        <div class="top-pills">
+          <div
+            id="scouncil"
+            class="pill home"
+            onclick="loadPage('home.html','Home')"
+          >
+            <i class="fa-solid fa-house"></i> Home
+          </div>
+
+          <!-- New Post button -->
+          <div
+            class="pill newpost"
+            id="newpostBtn"
+            onclick="loadPage('newpost.html','New Post')"
+          >
+            <div class="circle"><i class="fa-solid fa-plus"></i></div>
+            New Post
+          </div>
+
+          <!-- Student Council button -->
+          <div
+            class="pill newpost"
+            id="studentCouncilBtn"
+            onclick="loadPage('studentcouncil.html','Student Council')"
+          >
+            <div class="circle"><i class="fa-solid fa-user-graduate"></i></div>
+            Admin
+          </div>
+        </div>
+
+        <nav class="menu">
+          <div class="item" onclick="loadPage('school.html','School')">
+            <i class="fa-solid fa-school"></i> School
+          </div>
+          <div class="item" onclick="loadPage('events.html','Events')">
+            <i class="fa-solid fa-calendar-days"></i> Events
+          </div>
+          <div class="item" onclick="loadPage('office.html','Office')">
+            <i class="fa-solid fa-briefcase"></i> Office
+          </div>
+          <!--
+          <div class="item" onclick="loadPage('teachers.html','Teachers')">
+            <i class="fa-solid fa-user-tie"></i> Teachers
+          </div>-->
+          <div class="item" onclick="loadPage('staff.html','Staff')">
+            <i class="fa-solid fa-users"></i> Staff
+          </div>
+          <div class="item" onclick="loadPage('students.html','Students')">
+            <i class="fa-solid fa-graduation-cap"></i> Students
+          </div>
+        </nav>
+      </div>
+
+      <div class="side-bottom">
+        <div class="about-row" onclick="loadPage('about.html','About')">
+          <i class="fa-solid fa-book-open"></i> About
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="main-top">
+        <div class="left-group">
+          <button class="toggle-btn" id="sidebarToggle" aria-label="Toggle sidebar">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div class="left-title" id="pageTitle">Home</div>
+        </div>
+
+        <div class="right-icons">
+          <i
+            class="fa-regular fa-user"
+            id="userIcon"
+            onclick="loadPage('profile.html', 'Profile')"
+          ></i>
+          <i
+            class="fa-regular fa-bell"
+            onclick="loadPage('notification.html', 'Notifications')"
+          ></i>
+          <i
+            class="fa-solid fa-right-from-bracket"
+            id="logoutBtn"
+            title="Logout"
+          ></i>
+        </div>
+      </div>
+
+      <iframe id="contentFrame" src="home.html"></iframe>
+    </main>
+
+    <script src="main.js"></script>
+
+    <script>
+      // Redirect to login page if not logged in
+      if (localStorage.getItem("loggedIn") !== "1") {
+        window.location.href = "login.html";
+      }
+
+      const studentNumber = sessionStorage.getItem("studentNumber");
+      const studentCouncil = localStorage.getItem("studentCouncil");
+
+
+
+      console.log("Logged in student number:", studentNumber);
+      console.log("Student Council role/value:", studentCouncil);
+
+      // Get buttons
+      const newpostBtn = document.getElementById("newpostBtn");
+      const studentCouncilBtn = document.getElementById("studentCouncilBtn");
+
+      // Logic:
+      // - If studentCouncil is true → show studentCouncilBtn, hide newpostBtn
+      // - If studentCouncil is false/none → show newpostBtn, hide studentCouncilBtn
+      if (studentCouncil === "true") {
+        studentCouncilBtn.style.display = "flex"; // show
+        newpostBtn.style.display = "none"; // hide
+      } else {
+        studentCouncilBtn.style.display = "none"; // hide
+        newpostBtn.style.display = "flex"; // show
+      }
+
+      // Logout functionality
+      const logoutBtn = document.getElementById("logoutBtn");
+      logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("loggedIn");
+        localStorage.removeItem("studentCouncil");
+       sessionStorage.removeItem("studentNumber");
+        window.location.href = "login.html";
+      });
+    </script>
+  </body>
+</html>

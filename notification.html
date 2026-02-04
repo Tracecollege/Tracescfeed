@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications | TRACESCFEED</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #1a0508, #290a0f, #0f0304);
+      color: #fff;
+      padding: 50px 60px;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      color: #ffffff;
+      font-size: 2rem;
+      margin-bottom: 30px;
+    }
+
+    .notification {
+      background: rgba(6,4,4,0.75);
+      border: 1px solid rgba(88,17,29,0.32);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .notification:hover {
+      transform: scale(1.01);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.7);
+    }
+
+    .notification h3 {
+      margin: 0;
+      color: #ffffff;
+      font-size: 1.1rem;
+    }
+
+    .notification p {
+      margin: 10px 0 0;
+      color: #efecec;
+      line-height: 1.6;
+      font-size: 0.95rem;
+      text-align: justify;
+    }
+
+    .notification time {
+      display: block;
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: #b8b2b2;
+      text-align: right;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #d8cfcf;
+      margin-top: 100px;
+      font-style: italic;
+    }
+
+    /* Soft gradient glow button */
+    .back-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #ffffff, #e8e8e8);
+      color: #32060b;
+      font-weight: 600;
+      padding: 10px 22px;
+      border-radius: 8px;
+      text-decoration: none;
+      margin-top: 40px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.4),
+                  0 0 20px rgba(255,255,255,0.3),
+                  0 0 30px rgba(255,255,255,0.2);
+      transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background: linear-gradient(135deg, #fdfdfd, #f3f3f3);
+      box-shadow: 0 0 15px rgba(255,255,255,0.5),
+                  0 0 30px rgba(255,255,255,0.4),
+                  0 0 40px rgba(255,255,255,0.3);
+      transform: scale(1.02);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Notifications</h1>
+
+  <!-- Empty state (to be filled from database later) -->
+  <p class="empty-state">You have no new notifications right now.</p>
+
+  <div style="text-align:left; margin-top:30px;">
+    <button id="backBtn" class="back-btn">⬅ Back to Home</button>
+  </div>
+
+  <script>
+    // If this page is inside the index iframe, call parent's loadPage. Otherwise navigate to index.html
+    (function(){
+      var btn = document.getElementById('backBtn');
+      if(!btn) return;
+      btn.addEventListener('click', function(){
+        try {
+          if(window.parent && window.parent !== window && typeof window.parent.loadPage === 'function'){
+            window.parent.loadPage('home.html','Home');
+          } else {
+            // fallback when opened directly
+            window.location.href = 'index.html';
+          }
+        } catch(e) {
+          window.location.href = 'index.html';
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>

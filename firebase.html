@@ -1,0 +1,17 @@
+<!-- firebase.js -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC7oFziUJI6MVGh6CJ7ATfd8dw8BhRPfeA",
+  authDomain: "tracescfeed.firebaseapp.com",
+  projectId: "tracescfeed",
+  storageBucket: "tracescfeed.firebasestorage.app",
+  messagingSenderId: "700797865835",
+  appId: "1:700797865835:web:65ac0701c50c13edb6062e",
+};
+
+const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+</script>

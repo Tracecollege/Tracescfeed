@@ -1,0 +1,130 @@
+body {
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #1a0508, #290a0f, #0f0304);
+  margin: 0;
+  padding: 40px;
+  color: #fff;
+}
+
+/* Profile Info */
+.profile-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.profile-pic {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #58111d;
+}
+
+.camera-icon {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background: #ff4c4c;
+  color: white;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.change-photo {
+  position: relative;
+  display: inline-block;
+}
+
+.username {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-top: 14px;
+  color: #ff4c4c;
+}
+
+.student-number {
+  font-size: 0.95rem;
+  opacity: 0.8;
+  margin-top: 6px;
+  color: #d9d2d2;
+}
+.student-number i {
+  margin-right: 8px;
+  color: #d9d2d2;
+}
+
+/* Stats */
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  margin-top: 20px;
+  text-align: center;
+  background: rgba(88,17,29,0.18);
+  padding: 12px 18px;
+  border-radius: 12px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.stat p {
+  margin: 5px 0;
+}
+
+/* Posts */
+.posts-section {
+  margin-top: 40px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.posts-section h2 {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.post {
+  background: rgba(6,4,4,0.75);
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(88,17,29,0.32);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  margin-bottom: 18px;
+}
+
+.post-content {
+  font-size: 1rem;
+  margin-bottom: 15px;
+  color: #efecec;
+}
+
+.post-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  color: #d9d2d2;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}

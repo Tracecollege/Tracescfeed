@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Submit Post</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="newpost.css">
+</head>
+
+<body>
+  <div class="container" id="formContainer">
+
+    <form id="postForm">
+      <p class="subheader">Share Your Voice</p>
+      <p class="subdesc">
+        Your post will be reviewed by the student council before publishing.
+        You can post up to 3 times per week. All posts are anonymous.
+      </p>
+
+      <div class="form-group">
+        <label><i class="fa-solid fa-heading"></i> Topic</label>
+        <input id="topic" type="text" required>
+      </div>
+
+      <div class="form-group message-group">
+        <label><i class="fa-solid fa-align-left"></i> Message</label>
+        <textarea id="message" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fa-solid fa-image"></i> Image (Optional)</label>
+
+        <div class="upload-box" id="uploadBox">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <p>Click to upload an image</p>
+        </div>
+
+        <input type="file" id="fileInput" accept="image/*" hidden>
+        <div class="preview" id="preview"></div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fa-solid fa-tags"></i> Category</label>
+        <select id="category" required>
+          <option value="">Select Category</option>
+          <option>School</option>
+          <option>Events</option>
+          <option>Office</option>
+          <option>Staff</option>
+          <option>Students</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fa-solid fa-eye"></i> Post Visibility</label>
+        <select id="postvisibility" required>
+          <option value="">Select Visibility</option>
+          <option>Public</option>
+          <option>Private</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">
+        <i class="fa-solid fa-paper-plane"></i> Submit
+      </button>
+    </form>
+
+    <div class="success-message" id="successMessage" style="display:none">
+      <i class="fa-solid fa-circle-check"></i>
+      <p>Your post has been submitted successfully!</p>
+    </div>
+
+  </div>
+
+  <!-- FIREBASE LOGIC -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import {
+      getStorage,
+      ref,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
+
+    // 🔥 Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyC7oFziUJI6MVGh6CJ7ATfd8dw8BhRPfeA",
+      authDomain: "tracescfeed.firebaseapp.com",
+      projectId: "tracescfeed",
+      storageBucket: "tracescfeed.firebasestorage.app",
+      messagingSenderId: "700797865835",
+      appId: "1:700797865835:web:65ac0701c50c13edb6062e"
+    };
+
+    // Init Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    // Cached image (NOT uploaded yet)
+    let cachedImageFile = null;
+
+    const fileInput = document.getElementById("fileInput");
+    const preview = document.getElementById("preview");
+    const uploadBox = document.getElementById("uploadBox");
+
+    uploadBox.addEventListener("click", () => fileInput.click());
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      cachedImageFile = file;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        preview.innerHTML = `<img src="${reader.result}" alt="preview">`;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Submit handler
+    document.getElementById("postForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const submitBtn = document.getElementById("submitBtn");
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+
+      const topic = document.getElementById("topic").value.trim();
+      const message = document.getElementById("message").value.trim();
+      const category = document.getElementById("category").value;
+      const postvisibility = document.getElementById("postvisibility").value;
+      const createdBy = sessionStorage.getItem("studentNumber");
+
+      if (!topic || !message || !category || !postvisibility) {
+        alert("Please fill out all required fields.");
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit';
+        return;
+      }
+
+      try {
+        let imageURL = null;
+
+        // Upload image ONLY on submit
+        if (cachedImageFile) {
+          const imageRef = ref(
+            storage,
+            `feedbackImages/${createdBy || "anonymous"}_${Date.now()}_${cachedImageFile.name}`
+          );
+
+          const snapshot = await uploadBytes(imageRef, cachedImageFile);
+          imageURL = await getDownloadURL(snapshot.ref);
+        }
+
+        await addDoc(collection(db, "Feedback"), {
+          topic,
+          message,
+          category,
+          postvisibility,
+          imageURL,
+          createdBy,
+          timestamp: new Date()
+        });
+
+        console.log("✅ Document successfully created");
+
+        document.getElementById("postForm").style.display = "none";
+        document.getElementById("successMessage").style.display = "block";
+
+      } catch (error) {
+        console.error("❌ Error:", error);
+        alert(error.message);
+
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit';
+      }
+    });
+  </script>
+</body>
+</html>
